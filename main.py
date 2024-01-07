@@ -43,19 +43,27 @@ def interact_with_contract(contract_params, private_key):
         'nonce': nonce,
     })
 
-    es_gas = web3.eth.estimate_gas(tx)
-    tx.update({'gas': int(es_gas * 1.1)})
-    signed_tx = web3.eth.account.sign_transaction(tx, private_key)
-    tx_hash = web3.eth.send_raw_transaction(signed_tx.rawTransaction)
-    print(f"Transaction hash for {account_address}: {tx_hash.hex()}")
+    try:
+        es_gas = web3.eth.estimate_gas(tx)
+        tx.update({'gas': int(es_gas * 1.1)})
+        signed_tx = web3.eth.account.sign_transaction(tx, private_key)
+        tx_hash = web3.eth.send_raw_transaction(signed_tx.rawTransaction)
+        print(f"Transaction hash for {account_address}: {tx_hash.hex()}")
+    except Exception as e:
+        print(f"Error during transaction: {e}")
+        return None
+
     return tx_hash
 
 
 # 主程序
 if __name__ == '__main__':
     for p in private_keys:
-        private_key = p.strip()
-        wallet = web3.eth.account.from_key(private_key)
-        account_address = wallet.address
-        contract_params = get_contract_params(account_address, mint_num)
-        interact_with_contract(contract_params, private_key)
+        try:
+            private_key = p.strip()
+            wallet = web3.eth.account.from_key(private_key)
+            account_address = wallet.address
+            contract_params = get_contract_params(account_address, mint_num)
+            interact_with_contract(contract_params, private_key)
+        except Exception as e:
+            print(f"Error with: {e}")
