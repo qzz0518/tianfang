@@ -1,7 +1,7 @@
 import json
 import time
 
-import requests
+import cloudscraper
 from web3 import Web3
 
 web3 = Web3(Web3.HTTPProvider('https://1rpc.io/eth'))
@@ -13,31 +13,21 @@ contract = web3.eth.contract(address=contract_address, abi=contract_abi)
 with open('p.txt', 'r') as file:
     private_keys = file.readlines()
 
-bypass2_key = ''
 mint_num = 2
 
 
 def get_contract_params(address, num=2):
-    url = "https://cloudflare-bypass2.p.rapidapi.com/"
-    t_url = 'https://api.tinfun.com/v1/reserve'
-
-    querystring = {
-        "url": t_url,
-    }
-    headers = {
-        "X-RapidAPI-Key": bypass2_key,
-        "X-RapidAPI-Host": "cloudflare-bypass2.p.rapidapi.com"
-    }
-
+    scraper = cloudscraper.create_scraper()
+    url = 'https://api.tinfun.com/v1/reserve'
     timestamp = int(time.time() * 1000)
     data = {
         "num": num,
         "address": address,
         "timestamp": timestamp
     }
-    response = requests.post(url, headers=headers, params=querystring, json=data)
-    print(response.text)
-    return response.json()
+    result = scraper.post(url, json=data)
+    print(result.text)
+    return result.json()
 
 
 def interact_with_contract(contract_params, private_key):
