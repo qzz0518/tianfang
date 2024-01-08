@@ -14,6 +14,7 @@ with open('p.txt', 'r') as file:
     private_keys = file.readlines()
 
 mint_num = 2
+max_fee_per_gas = 50
 
 
 def get_contract_params(address, num=2):
@@ -39,7 +40,8 @@ def interact_with_contract(contract_params, private_key):
     ).build_transaction({
         'from': wallet.address,
         'value': web3.to_wei(params['number'] * 0.1, 'ether'),
-        'gasPrice': web3.eth.gas_price,
+        'maxFeePerGas': web3.to_wei(max_fee_per_gas, 'gwei'),
+        'maxPriorityFeePerGas': web3.to_wei(0.1, 'gwei'),
         'nonce': nonce,
     })
 
